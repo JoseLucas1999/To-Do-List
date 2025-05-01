@@ -5,6 +5,7 @@ const todoList = document.querySelector("#todo-list")
 const editForm = document.querySelector("#edit-form")
 const editInput = document.querySelector("#edit-input")
 const cancelEditBtn = document.querySelector("#cancel-edit-btn")
+let oldInputValue;
 
 // 1) ao adicionar tarefa evendo para todoForm é acionado
 // 2) chama função saveTodo (adiciona tarefa)
@@ -13,7 +14,19 @@ const cancelEditBtn = document.querySelector("#cancel-edit-btn")
 // 5) btn done adicione class done
 // 6) btn remove remove todo criado dinamicamnete
 // 7) edit chama função de troca de form (add to edit)
+// 8) cancelEditBtn chama toggle e troca (edit to add)
 
+//EDITAR
+
+
+// 9) salvamos  o h3 do parentEl em todoTile
+// 10) no if(classList.contains) salvamos todoTitle em editInput e oldinputVlue
+// 11) criamos um evendo de click em editForm
+// 12) salvamos valor de editInput em editInputValue
+// 13) chamamos a função updateTodo
+
+
+ 
 // funções
 
 //salvar tarefa
@@ -66,6 +79,23 @@ const toggleForm = () => {
     todoList.classList.toggle("hide")
 }
 
+//update tarefa
+//text recebera editInputValue 
+const update = (text) => {
+    //pegamos todo o todolist
+    const todos = document.querySelectorAll(".todo")
+    //percorre valores
+    //verifica se valor de todoTile = oldInputValue
+    
+    todos.forEach((todo) => {
+        let todoTitle = todo.querySelector("h3");
+
+        if(todoTitle.innerText === oldInputValue){
+            //adiciona em todoTile o valor recebido por parametro
+            todoTitle.innerText = text
+        }
+    })
+}
 
 // eventos
 
@@ -73,8 +103,7 @@ const toggleForm = () => {
 todoForm.addEventListener("submit", (e) => {
     //form não é enviado
     e.preventDefault();
-
-    const inputValue = todoInput.value
+    const inputValue = todoInput.value;
 
     if(inputValue){
         //função que salva todos
@@ -82,13 +111,23 @@ todoForm.addEventListener("submit", (e) => {
     }
 })
 
-//identificar quando btn(click) for adionado
+//identificar quando btn(click) for acionado
 document.addEventListener("click", (e) => {
 
     //elemento clickado
     const targetEl = e.target
     //elemento pai (mais perto = todo)
     const parentEl = targetEl.closest("div")
+    //titulo da tarefa
+    let todoTitle; //deixamos aqui pq let possui escopo de bloco
+
+    //verificar se element pai existe e possui um h3
+    if(parentEl && parentEl.querySelector("h3")){
+        //adicionamos o valor do h3 no todoTitle
+        todoTitle = parentEl.querySelector("h3").innerText;
+    }
+
+
 
     //verificr a class do elemento clickado
     if(targetEl.classList.contains("finish-todo")){
@@ -103,6 +142,9 @@ document.addEventListener("click", (e) => {
         // precisamos trocar de formulario
         // chamamos o evento de troca
         toggleForm()
+        //salvamos todoTitle em editInput
+        editInput.value = todoTitle //apenas objeto possuem value
+        oldInputValue = todoTitle
     }
 })
 
@@ -114,4 +156,20 @@ cancelEditBtn.addEventListener("click", (e) => {
     //apenas usamos o toggle para mudar de form
     toggleForm()
 
+})
+
+//ao enviar editForm adicionamos um evendo de submit
+editForm.addEventListener("submit", (e) => {
+    e.preventDefault()
+
+    //em editInput temos a tarefa clicada 
+    const editInputValue = editInput.value
+
+    //verifica se tem valor em editInputValue
+    if(editInputValue){
+        update(editInputValue)
+    }
+
+    toggleForm()
+    
 })
